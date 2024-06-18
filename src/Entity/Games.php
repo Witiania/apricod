@@ -24,8 +24,8 @@ class Games
      #[ORM\JoinTable(name:"genres_to_games")]
     #[ORM\JoinColumn(name:"genre_id",referencedColumnName:"id")]
     #[ORM\InverseJoinColumn(name:"game_id",referencedColumnName:"id")]
-    #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'games')]
-    private ArrayCollection $genres;
+    #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'games',cascade: ['persist'])]
+    private Collection $genres;
 
     public function __construct()
     {
@@ -61,9 +61,16 @@ class Games
         return $this;
     }
 
-    public function getTags():?ArrayCollection
+    public function getGenres():?ArrayCollection
     {
         return $this->genres;
+    }
+
+
+    public function removeGenre(Genre $genre): static
+    {
+        $this->genres->removeElement($genre);
+        return $this;
     }
 
     public function addGenre(Genre $genre): static
