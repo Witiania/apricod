@@ -13,5 +13,4 @@ class RequestDTO
 
     #[Assert\Type('array')]
     public ?array $genres = null;
-
 }

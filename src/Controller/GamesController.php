@@ -3,45 +3,62 @@
 namespace App\Controller;
 
 use App\DTO\RequestDTO;
-use App\Entity\Games;
-use App\Entity\Genre;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\GameService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class GamesController extends AbstractController
 {
-    public function __invoke(
-        #[MapRequestPayload] RequestDTO $requestDTO,
+    public function __construct(
+        private readonly SerializerInterface $serializer,
+        private readonly GameService $gameService
     )
     {
-
     }
-    #[Route('/', name: 'app_games', methods: ['POST'])]
-    public function create(
-        #[MapRequestPayload] RequestDTO $request,
-        EntityManagerInterface $em): JsonResponse
+    #[Route('/', name: 'add_games', methods: ['POST'])]
+    public function create(#[MapRequestPayload] RequestDTO $request): JsonResponse
     {
-        $game = new Games();
-        $game->setName($request['name']);
-        $game->setDeveloperStudio($request['developerStudio']);
-        $genres =  $game->getGenres();
+        $jsonGame = $this->serializer->serialize($this->gameService->create($request), 'json');
+        return new JsonResponse($jsonGame, 200, [], true);
+    }
 
-        foreach ($request['genres'] as $genre) {
-            $genreEntity = $em->getRepository(Genre::class)->findOneBy(['name' => $genre]);
-            if(!$genreEntity) {
-                $genreEntity = new Genre();
-                $genreEntity->setName($genre);
-                $em->persist($genreEntity);
-            }else{
-                $genres->add($genreEntity);
-            }
-        }
+    /**
+     * @throws \Exception
+     */
+    #[Route('/{id}', name: 'get_games', methods: ['GET'])]
+    public function get(int $id): JsonResponse
+    {
+        $jsonGame = $this->serializer->serialize($this->gameService->get($id), 'json');
+        return new JsonResponse($jsonGame, 200, [], true);
+    }
 
-        $em->persist($game);
-        $em->flush();
-        return $this->json($game)->setStatusCode(201);
+    /**
+     * @throws \Exception
+     */
+    #[Route('/{id}', name: 'delete_games', methods: ['DELETE'])]
+    public function delete(int $id): JsonResponse
+    {
+        $jsonGame = $this->serializer->serialize($this->gameService->remove($id), 'json');
+        return new JsonResponse($jsonGame, 200, [], true);
+    }
+
+    #[Route('/{id}', name: 'update_games', methods: ['PUT'])]
+    public function update(#[MapRequestPayload] RequestDTO $request, int $id): JsonResponse
+    {
+        $jsonGames = $this->serializer->serialize($this->gameService->update($id, $request), 'json');
+        return new JsonResponse($jsonGames, 200, [], true);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    #[Route('/list/{genre}', name: 'get_games', methods: ['GET'])]
+    public function list(string $genre): JsonResponse
+    {
+        $jsonGames = $this->serializer->serialize($this->gameService->list($genre), 'json');
+        return new JsonResponse($jsonGames, 200, [], true);
     }
 }
