@@ -3,9 +3,10 @@
 namespace App\Service;
 
 use App\Entity\Games;
+use App\Service\Interface\RemoveGameInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-class RemoveGameService
+class RemoveGameService implements RemoveGameInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $em

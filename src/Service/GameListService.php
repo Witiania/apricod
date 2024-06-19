@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Games;
+use App\Service\Interface\GameListInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GameListService implements GameListInterface

@@ -5,6 +5,7 @@ namespace App\Service;
 use App\DTO\RequestDTO;
 use App\Entity\Games;
 use App\Entity\Genre;
+use App\Service\Interface\CreateGameInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CreateGame implements CreateGameInterface

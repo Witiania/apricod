@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Interface;
 
 use App\DTO\RequestDTO;
 use App\Entity\Games;
