@@ -3,9 +3,12 @@
 namespace App\Service;
 
 use App\DTO\RequestDTO;
+use App\DTO\ResponseDTO;
+use App\DTO\ResponseListDTO;
 use App\Entity\Games;
 use App\Entity\Genre;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class GameService
 {
@@ -16,7 +19,10 @@ class GameService
     {
     }
 
-    public function create(RequestDTO $request): Games
+    /**
+     * @throws ExceptionInterface
+     */
+    public function create(RequestDTO $request): ResponseDTO
     {
         $game = new Games();
         $game->setName($request->name);
@@ -37,19 +43,21 @@ class GameService
         $this->em->persist($game);
         $this->em->flush();
 
-        return $game;
+        return new ResponseDTO($game);
     }
 
     /**
      * @throws \Exception
+     * @throws ExceptionInterface
      */
-    public function get(int $id): Games
+    public function get(int $id): ResponseDTO
     {
         $game = $this->em->getRepository(Games::class)->find($id);
         if (!$game) {
             throw new \Exception('Game not found');
         }
-        return $game;
+
+        return new ResponseDTO($game);
     }
 
     /**
@@ -67,7 +75,11 @@ class GameService
         return 'success';
     }
 
-    public function update(int $id, RequestDTO $request)
+    /**
+     * @throws \Exception
+     * @throws ExceptionInterface
+     */
+    public function update(int $id, RequestDTO $request): ResponseDTO
     {
         $game = $this->em->getRepository(Games::class)->find($id);
         if (!$game) {
@@ -102,18 +114,19 @@ class GameService
         $this->em->persist($game);
         $this->em->flush();
 
-        return $game;
+        return new ResponseDTO($game);
     }
 
     /**
      * @throws \Exception
+     * @throws ExceptionInterface
      */
-    public function list(string $genre): array
+    public function list(string $genre): ResponseListDTO
     {
         $games = $this->em->getRepository(Games::class)->findByFilter($genre);
         if (!$games) {
             throw new \Exception('Games not found');
         }
-        return $games;
+        return new ResponseListDTO($games);
     }
 }
