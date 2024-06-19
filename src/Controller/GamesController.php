@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
+
 class GamesController extends AbstractController
 {
     public function __construct(
@@ -18,10 +19,13 @@ class GamesController extends AbstractController
     {
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     #[Route('/', name: 'add_games', methods: ['POST'])]
     public function create(#[MapRequestPayload] RequestDTO $request): JsonResponse
     {
-        return $this->json($request, 201);
+        return $this->json($this->gameService->create($request));
     }
 
     /**
