@@ -21,7 +21,7 @@ class GamesController extends AbstractController
     #[Route('/', name: 'add_games', methods: ['POST'])]
     public function create(#[MapRequestPayload] RequestDTO $request): JsonResponse
     {
-        return $this->json($request, 200, [], (array)true);
+        return $this->json($request, 201);
     }
 
     /**
